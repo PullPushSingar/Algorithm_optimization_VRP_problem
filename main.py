@@ -40,18 +40,21 @@ def parse_vrp_file(file_path):
 
 # Main execution
 if __name__ == "__main__":
+    num_drones = 3
     file_path = r'data/att48.vrp'
     vrp_data = parse_vrp_file(file_path)
 
+    depot_node = vrp_data['node_coords'][0]
+    client_coords = vrp_data['node_coords'][1:] # all except 0 node
+    drones_capacity = vrp_data['capacity']
 
-    print(vrp_data['node_coords'])
-    client_cords = vrp_data['node_coords']
-    map = Map()
-    map.add_clients(client_cords)
-    map.print_cilents()
+    map = Map(depot_node)
+    map.add_clients(client_coords) 
+    map.print_clients()
+    map.add_drones(num_drones, drones_capacity)
+    map.print_drones()
+
     map.plot_node_distribution()
-    map.add_drone()
-    map.drone.set_capacity(vrp_data['capacity'])
 
 
 

@@ -1,20 +1,17 @@
 
 
 class Drone:
-    def __init__(self,start_node):
-        self.id = start_node[0]
-        self.capacity = 0
+    def __init__(self, id, start_node, capacity):
+        self.id = id
+        self.capacity = capacity
         self.num_of_packages = 0
-        self.temp_cleint_id = None
+        self.temp_client_id = None
         self.x,self.y = start_node[1],start_node[2]
         self.x_client, self.y_client = None,None
         self.prev_x_client, self.prev_y_client = None, None
 
+    def __str__(self):
+        return f"id: {self.id}, x: {self.x}, y {self.y}, capacity: {self.capacity}"
 
-    def set_depot_location(self,x,y):
-        self.x,self.y = x,y
-
-    def set_capacity(self,capacity):
-        self.capacity = capacity
 
 
