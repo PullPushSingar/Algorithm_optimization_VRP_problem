@@ -20,6 +20,7 @@ class Map:
         for i in range(num):
             self.drones.append(Drone(i+1, self.depot_node, capacity))
 
+
     def print_clients(self):
         print("Clients: ")
         for client in self.clients:
@@ -34,19 +35,37 @@ class Map:
         # Extract coordinates
         x_coords = []
         y_coords = []
+        x_drone = []
+        y_drone= []
+
+
         for client in self.clients:
             x_coords.append(client.x)
             y_coords.append(client.y)
+
+        for drone in self.drones:
+            x_drone.append(drone.x)
+            y_drone.append(drone.y)
 
         # Create a plot
         plt.figure(figsize=(10, 8))
         plt.scatter(x_coords, y_coords, color='blue', marker='o')
         plt.scatter(self.depot_node[1], self.depot_node[2], color='red', marker='o')
+        plt.scatter(x_drone, y_drone, color='green', marker='o')
         plt.title('Geographical Distribution of Nodes for CVRP')
         plt.xlabel('X Coordinate')
         plt.ylabel('Y Coordinate')
         plt.grid(True)
         plt.show()
+
+    def add_route(self):
+        print("Adding route")
+        self.drones[0].add_route(self.clients[0])
+
+    def move_drone(self):
+        self.drones[0].move(self.clients[0].x, self.clients[0].y)
+
+
 
 
 

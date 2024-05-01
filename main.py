@@ -49,6 +49,7 @@ def parse_vrp_file(file_path):
 
 
 
+
 # Main execution
 if __name__ == "__main__":
     num_drones = 3
@@ -62,15 +63,16 @@ if __name__ == "__main__":
 
 
 
-
-
-
-
-
     map = Map(depot_node)
     map.add_clients(client_coords,client_capacity)
     map.print_clients()
     map.add_drones(num_drones, drones_capacity)
+    map.print_drones()
+
+    map.plot_node_distribution()
+
+    map.add_route()
+    map.move_drone()
     map.print_drones()
 
     map.plot_node_distribution()
