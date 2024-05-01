@@ -11,9 +11,10 @@ class Map:
         self.drones = []
 
 
-    def add_clients(self,node_modules):
-        for node_module in node_modules:
-            self.clients.append(Client(node_module[0],node_module[1],node_module[2]))
+    def add_clients(self,node_modules,capacity):
+        for node_module,capacity in zip(node_modules,capacity):
+
+            self.clients.append(Client(node_module[0],node_module[1],node_module[2],capacity[1]))
 
     def add_drones(self, num, capacity):
         for i in range(num):
