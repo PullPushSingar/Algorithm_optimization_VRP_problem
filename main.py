@@ -63,6 +63,7 @@ if __name__ == "__main__":
 
 
 
+
     map = Map(depot_node)
     map.add_clients(client_coords,client_capacity)
     map.print_clients()

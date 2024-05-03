@@ -4,6 +4,7 @@ class Drone:
     def __init__(self, id, start_node, capacity):
         self.id = id
         self.capacity = capacity
+        self.start_capacity = capacity
         self.num_of_packages = 0
         self.temp_client_id = None
         self.depot_x = start_node[1]
@@ -31,6 +32,14 @@ class Drone:
         elif y < self.y:
             self.y -=1
         self.distance += 1
+
+    def is_full(self,client_weight):
+        if client_weight > self.capacity:
+            return True
+        return False
+
+    def visit_depot(self):
+        self.capacity = self.start_capacity
 
 
 

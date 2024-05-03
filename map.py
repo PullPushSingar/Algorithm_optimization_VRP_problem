@@ -14,6 +14,7 @@ class Map:
         self.drones = []
 
 
+
     def add_clients(self,node_modules,capacity):
         for node_module,capacity in zip(node_modules,capacity):
 
@@ -67,16 +68,21 @@ class Map:
         print("Adding route")
 
     def move_drone(self):
+
         if self.is_drone_visit_client():
             visited_client = self.visit_drone()
             if visited_client in self.clients:
                 self.clients.remove(visited_client)
                 print("remove Client")
                 self.plot_node_distribution()
-                time.sleep(5)
+                time.sleep(1)
             self.choose_nearest_node()
         for drone in self.drones:
             drone.move(drone.x_client, drone.y_client)
+
+            if drone.x == self.depot_node[1] and drone.y == self.depot_node[2]:
+                drone.capacity = drone.start_capacity
+
 
     def choose_nearest_node(self):
         for drone in self.drones:
@@ -86,17 +92,24 @@ class Map:
             for node in self.clients:
                 distance = abs(drone.x - node.x) + abs(
                     drone.y - node.y)
-                if distance < nearest_distance:
+                if distance < nearest_distance and not drone.is_full(node.capacity):
                     nearest_distance = distance
                     nearest_x = node.x
                     nearest_y = node.y
+                elif drone.is_full(node.capacity):
+                    drone.x_client = self.depot_node[1]
+                    drone.y_client = self.depot_node[2]
+
             if nearest_x is not None and nearest_y is not None:
                 drone.x_client = nearest_x
                 drone.y_client = nearest_y
 
+
+
     def is_drone_visit_client(self):
         for drone in self.drones:
             if drone.y == drone.y_client and drone.x == drone.x_client:
+                drone.capacity -= 1
                 return True
         return False
 
@@ -105,6 +118,8 @@ class Map:
             for drone in self.drones:
                 if client.x == drone.x and client.y == drone.y:
                     return client
+
+
 
 
 
