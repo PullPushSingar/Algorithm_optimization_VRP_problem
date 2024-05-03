@@ -6,6 +6,8 @@ class Drone:
         self.capacity = capacity
         self.num_of_packages = 0
         self.temp_client_id = None
+        self.depot_x = start_node[1]
+        self.depot_y = start_node[2]
         self.x,self.y = start_node[1],start_node[2]
         self.x_client, self.y_client = None,None
         self.prev_x_client, self.prev_y_client = None, None
@@ -20,8 +22,20 @@ class Drone:
         self.y_client = node.y
 
     def move(self,x,y):
-        self.x = x
-        self.y = y
+        if x > self.x:
+            self.x += 1
+        elif x < self.x:
+            self.x -= 1
+        elif y > self.y:
+            self.y +=1
+        elif y < self.y:
+            self.y -=1
+        self.distance += 1
+
+
+
+
+
 
 
 

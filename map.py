@@ -1,5 +1,7 @@
 
 import numpy as np
+
+import drone
 from client import Client
 from drone import Drone
 import matplotlib.pyplot as plt
@@ -32,7 +34,7 @@ class Map:
             print(drone)
 
     def plot_node_distribution(self):
-        # Extract coordinates
+
         x_coords = []
         y_coords = []
         x_drone = []
@@ -47,7 +49,7 @@ class Map:
             x_drone.append(drone.x)
             y_drone.append(drone.y)
 
-        # Create a plot
+
         plt.figure(figsize=(10, 8))
         plt.scatter(x_coords, y_coords, color='blue', marker='o')
         plt.scatter(self.depot_node[1], self.depot_node[2], color='red', marker='o')
@@ -59,11 +61,50 @@ class Map:
         plt.show()
 
     def add_route(self):
+
+        self.choose_nearest_node()
         print("Adding route")
-        self.drones[0].add_route(self.clients[0])
 
     def move_drone(self):
-        self.drones[0].move(self.clients[0].x, self.clients[0].y)
+        if self.is_drone_visit_client():
+            visited_client = self.visit_drone()
+            if visited_client in self.clients:
+                self.clients.remove(visited_client)  # Usuń klienta z listy
+                print("remove Client")
+            self.choose_nearest_node()
+        for drone in self.drones:
+            drone.move(drone.x_client, drone.y_client)
+
+
+    def choose_nearest_node(self):
+        nearest_x = 1000000
+        nearest_y = 1000000
+        for drone in self.drones:
+            for node in self.clients:
+                if abs(drone.x - node.x) <= nearest_x and abs(drone.y - node.y <= nearest_y):
+                    nearest_x = node.x
+                    nearest_y = node.y
+            drone.x_client = nearest_x
+            drone.y_client = nearest_y
+
+    def is_drone_visit_client(self):
+        for drone in self.drones:
+            if drone.y == drone.y_client and drone.x == drone.x_client:
+                return True
+        return False  # Dodano zwracanie False
+
+    def visit_drone(self):
+        for client in self.clients:
+            for drone in self.drones:
+                if client.x == drone.x and client.y == drone.y:
+                    return client  # Zwraca klienta, który jest obecnie odwiedzany
+
+
+
+
+
+
+
 
 
 
