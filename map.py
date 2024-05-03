@@ -1,3 +1,4 @@
+import time
 
 import numpy as np
 
@@ -69,35 +70,41 @@ class Map:
         if self.is_drone_visit_client():
             visited_client = self.visit_drone()
             if visited_client in self.clients:
-                self.clients.remove(visited_client)  # Usuń klienta z listy
+                self.clients.remove(visited_client)
                 print("remove Client")
+                self.plot_node_distribution()
+                time.sleep(5)
             self.choose_nearest_node()
         for drone in self.drones:
             drone.move(drone.x_client, drone.y_client)
 
-
     def choose_nearest_node(self):
-        nearest_x = 1000000
-        nearest_y = 1000000
         for drone in self.drones:
+            nearest_distance = float('inf')
+            nearest_x = None
+            nearest_y = None
             for node in self.clients:
-                if abs(drone.x - node.x) <= nearest_x and abs(drone.y - node.y <= nearest_y):
+                distance = abs(drone.x - node.x) + abs(
+                    drone.y - node.y)
+                if distance < nearest_distance:
+                    nearest_distance = distance
                     nearest_x = node.x
                     nearest_y = node.y
-            drone.x_client = nearest_x
-            drone.y_client = nearest_y
+            if nearest_x is not None and nearest_y is not None:
+                drone.x_client = nearest_x
+                drone.y_client = nearest_y
 
     def is_drone_visit_client(self):
         for drone in self.drones:
             if drone.y == drone.y_client and drone.x == drone.x_client:
                 return True
-        return False  # Dodano zwracanie False
+        return False
 
     def visit_drone(self):
         for client in self.clients:
             for drone in self.drones:
                 if client.x == drone.x and client.y == drone.y:
-                    return client  # Zwraca klienta, który jest obecnie odwiedzany
+                    return client
 
 
 
