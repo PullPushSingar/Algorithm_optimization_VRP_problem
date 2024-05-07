@@ -6,12 +6,15 @@ import drone
 from client import Client
 from drone import Drone
 import matplotlib.pyplot as plt
+import math
 
 class Map:
     def __init__(self, depot_node):
         self.depot_node = depot_node
         self.clients = []
         self.drones = []
+        self.map_range = []
+        self.map_range_calculated = False
 
 
 
@@ -35,13 +38,23 @@ class Map:
         for drone in self.drones:
             print(drone)
 
+    def calculate_map_range(self):
+        self.map_range.append(min([client.x for client in self.clients] + [drone.x for drone in self.drones] + [self.depot_node[1]])-100)
+        self.map_range.append(max([client.x for client in self.clients] + [drone.x for drone in self.drones] + [self.depot_node[1]])+100)
+        self.map_range.append(min([client.y for client in self.clients] + [drone.y for drone in self.drones] + [self.depot_node[2]])-100)
+        self.map_range.append(max([client.y for client in self.clients] + [drone.y for drone in self.drones] + [self.depot_node[2]])+100)
+        self.map_range_calculated = True
+
+
     def plot_node_distribution(self):
+
+        if not self.map_range_calculated:
+            self.calculate_map_range()
 
         x_coords = []
         y_coords = []
         x_drone = []
         y_drone= []
-
 
         for client in self.clients:
             x_coords.append(client.x)
@@ -52,50 +65,50 @@ class Map:
             y_drone.append(drone.y)
 
 
+
         plt.figure(figsize=(10, 8))
         plt.scatter(x_coords, y_coords, color='blue', marker='o')
         plt.scatter(self.depot_node[1], self.depot_node[2], color='red', marker='o')
-        plt.scatter(x_drone, y_drone, color='green', marker='o')
+
+        colors = ['magenta', 'orange', 'yellow', 'green', 'cyan', 'purple']
+        for i, (x, y) in enumerate(zip(x_drone, y_drone)):
+            plt.scatter(x, y, color=colors[i % len(colors)], marker='o')
+
         plt.title('Geographical Distribution of Nodes for CVRP')
         plt.xlabel('X Coordinate')
         plt.ylabel('Y Coordinate')
         plt.grid(True)
+        plt.xlim(self.map_range[0], self.map_range[1])
+        plt.ylim(self.map_range[2], self.map_range[3])
         plt.show()
 
-    def add_route(self):
+    # def add_route(self):
 
-        self.choose_nearest_node()
-        print("Adding route")
+    #     self.choose_nearest_node()
+    #     print("Adding route")
 
-    def move_drone(self):
+    def move_drones(self):
 
-        if self.is_drone_visit_client():
-            visited_client = self.visit_drone()
-            if visited_client in self.clients:
+        for drone in self.drones:
+            self.choose_nearest_node(drone)
+            drone.move_to_next_node()
+            visited_client = self.find_visited_client(drone)
+            if visited_client is not None:
                 self.clients.remove(visited_client)
-                print("remove Client")
-                self.plot_node_distribution()
-                time.sleep(1)
-            self.choose_nearest_node()
-        for drone in self.drones:
-            drone.move(drone.x_client, drone.y_client)
-
-            if drone.x == self.depot_node[1] and drone.y == self.depot_node[2]:
-                drone.capacity = drone.start_capacity
 
 
-    def choose_nearest_node(self):
-        for drone in self.drones:
+    def choose_nearest_node(self, drone):
             nearest_distance = float('inf')
             nearest_x = None
             nearest_y = None
             for node in self.clients:
-                distance = abs(drone.x - node.x) + abs(
-                    drone.y - node.y)
+                # distance = abs(drone.x - node.x) + abs(drone.y - node.y)
+                distance = math.sqrt((drone.x - node.x)**2 + (drone.y - node.y)**2)
                 if distance < nearest_distance and not drone.is_full(node.capacity):
                     nearest_distance = distance
                     nearest_x = node.x
                     nearest_y = node.y
+                    nearest_node_weight= node.capacity
                 elif drone.is_full(node.capacity):
                     drone.x_client = self.depot_node[1]
                     drone.y_client = self.depot_node[2]
@@ -103,21 +116,25 @@ class Map:
             if nearest_x is not None and nearest_y is not None:
                 drone.x_client = nearest_x
                 drone.y_client = nearest_y
+                drone.client_weight = nearest_node_weight
+            else:
+                drone.x_client = self.depot_node[1]
+                drone.y_client = self.depot_node[2]
 
 
 
-    def is_drone_visit_client(self):
-        for drone in self.drones:
-            if drone.y == drone.y_client and drone.x == drone.x_client:
-                drone.capacity -= 1
-                return True
-        return False
+    # def is_drone_visit_client(self):
+    #     for drone in self.drones:
+    #         if drone.y == drone.y_client and drone.x == drone.x_client:
+    #             drone.capacity -= 1
+    #             return True
+    #     return False
 
-    def visit_drone(self):
+    def find_visited_client(self, drone):
         for client in self.clients:
-            for drone in self.drones:
-                if client.x == drone.x and client.y == drone.y:
-                    return client
+            if client.x == drone.x and client.y == drone.y:
+                return client
+        return None
 
 
 

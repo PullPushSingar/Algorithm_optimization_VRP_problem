@@ -52,7 +52,7 @@ def parse_vrp_file(file_path):
 
 # Main execution
 if __name__ == "__main__":
-    num_drones = 1
+    num_drones = 3
     file_path = r'data/att48.vrp'
     vrp_data = parse_vrp_file(file_path)
 
@@ -72,18 +72,16 @@ if __name__ == "__main__":
 
     map.plot_node_distribution()
 
-    map.add_route()
+    # map.add_route()
 
-    print(map.depot_node)
+    # print(map.depot_node)
 
     while len(map.clients) != 0:
-        map.move_drone()
-        # map.plot_node_distribution()
-        # map.print_drones()
+        map.move_drones()
+        map.print_drones()
+        map.plot_node_distribution()
 
-
-
-
+    map.move_drones()
     map.print_drones()
     map.plot_node_distribution()
 
