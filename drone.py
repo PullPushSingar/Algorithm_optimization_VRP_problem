@@ -3,8 +3,8 @@
 class Drone:
     def __init__(self, id, start_node, capacity):
         self.id = id
-        self.current_capacity = capacity
-        self.start_capacity = capacity
+        self.current_capacity = 3
+        self.start_capacity = 3
         self.temp_client_id = None
         self.depot_x = start_node[1]
         self.depot_y = start_node[2]
@@ -15,11 +15,6 @@ class Drone:
 
     def __str__(self):
         return f"id: {self.id}, x: {self.x}, y {self.y}, current_capacity: {self.current_capacity}"
-
-    # def add_route(self,node):
-    #     print(f"Adding route: {node}")
-    #     self.x_client = node.x
-    #     self.y_client = node.y
 
     def move_to_next_node(self):
         self.y = self.y_client

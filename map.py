@@ -54,17 +54,17 @@ class Map:
         x_coords = []
         y_coords = []
         x_drone = []
-        y_drone= []
+        y_drone = []
+        client_ids = []
 
         for client in self.clients:
             x_coords.append(client.x)
             y_coords.append(client.y)
+            client_ids.append(client.id) 
 
         for drone in self.drones:
             x_drone.append(drone.x)
             y_drone.append(drone.y)
-
-
 
         plt.figure(figsize=(10, 8))
         plt.scatter(x_coords, y_coords, color='blue', marker='o')
@@ -74,6 +74,9 @@ class Map:
         for i, (x, y) in enumerate(zip(x_drone, y_drone)):
             plt.scatter(x, y, color=colors[i % len(colors)], marker='o')
 
+        for i, txt in enumerate(client_ids): 
+            plt.annotate(txt, (x_coords[i], y_coords[i]), textcoords="offset points", xytext=(0, 5), ha='center')
+
         plt.title('Geographical Distribution of Nodes for CVRP')
         plt.xlabel('X Coordinate')
         plt.ylabel('Y Coordinate')
@@ -81,11 +84,6 @@ class Map:
         plt.xlim(self.map_range[0], self.map_range[1])
         plt.ylim(self.map_range[2], self.map_range[3])
         plt.show()
-
-    # def add_route(self):
-
-    #     self.choose_nearest_node()
-    #     print("Adding route")
 
     def move_drones(self):
 
@@ -102,7 +100,6 @@ class Map:
             nearest_x = None
             nearest_y = None
             for node in self.clients:
-                # distance = abs(drone.x - node.x) + abs(drone.y - node.y)
                 distance = math.sqrt((drone.x - node.x)**2 + (drone.y - node.y)**2)
                 if distance < nearest_distance and not drone.is_full(node.capacity):
                     nearest_distance = distance
@@ -120,15 +117,6 @@ class Map:
             else:
                 drone.x_client = self.depot_node[1]
                 drone.y_client = self.depot_node[2]
-
-
-
-    # def is_drone_visit_client(self):
-    #     for drone in self.drones:
-    #         if drone.y == drone.y_client and drone.x == drone.x_client:
-    #             drone.capacity -= 1
-    #             return True
-    #     return False
 
     def find_visited_client(self, drone):
         for client in self.clients:
