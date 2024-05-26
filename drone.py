@@ -3,8 +3,8 @@
 class Drone:
     def __init__(self, id, start_node, capacity):
         self.id = id
-        self.current_capacity = 3
-        self.start_capacity = 3
+        self.current_capacity = 10
+        self.start_capacity = 10
         self.temp_client_id = None
         self.depot_x = start_node[1]
         self.depot_y = start_node[2]

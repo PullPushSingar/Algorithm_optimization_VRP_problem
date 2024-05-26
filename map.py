@@ -46,8 +46,7 @@ class Map:
         self.map_range_calculated = True
 
 
-    def plot_node_distribution(self):
-
+    def plot_node_distribution(self, best_solution):
         if not self.map_range_calculated:
             self.calculate_map_range()
 
@@ -60,7 +59,7 @@ class Map:
         for client in self.clients:
             x_coords.append(client.x)
             y_coords.append(client.y)
-            client_ids.append(client.id) 
+            client_ids.append(client.id)
 
         for drone in self.drones:
             x_drone.append(drone.x)
@@ -74,8 +73,15 @@ class Map:
         for i, (x, y) in enumerate(zip(x_drone, y_drone)):
             plt.scatter(x, y, color=colors[i % len(colors)], marker='o')
 
-        for i, txt in enumerate(client_ids): 
+        for i, txt in enumerate(client_ids):
             plt.annotate(txt, (x_coords[i], y_coords[i]), textcoords="offset points", xytext=(0, 5), ha='center')
+
+        # Rysowanie ścieżek
+        for color_idx, (key, routes) in enumerate(best_solution.items()):
+            for route in routes:
+                route_x = [self.depot_node[1] if node == 1 else self.clients[node - 2].x for node in route]
+                route_y = [self.depot_node[2] if node == 1 else self.clients[node - 2].y for node in route]
+                plt.plot(route_x, route_y, color=colors[color_idx % len(colors)], linewidth=2)
 
         plt.title('Geographical Distribution of Nodes for CVRP')
         plt.xlabel('X Coordinate')
