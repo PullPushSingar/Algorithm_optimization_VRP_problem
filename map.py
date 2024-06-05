@@ -46,7 +46,7 @@ class Map:
         self.map_range_calculated = True
 
 
-    def plot_node_distribution(self, best_solution):
+    def plot_node_distribution(self, best_solution=None):
         if not self.map_range_calculated:
             self.calculate_map_range()
 
@@ -55,11 +55,13 @@ class Map:
         x_drone = []
         y_drone = []
         client_ids = []
+        client_capas= []
 
         for client in self.clients:
             x_coords.append(client.x)
             y_coords.append(client.y)
             client_ids.append(client.id)
+            client_capas.append(client.capacity)
 
         for drone in self.drones:
             x_drone.append(drone.x)
@@ -74,61 +76,25 @@ class Map:
             plt.scatter(x, y, color=colors[i % len(colors)], marker='o')
 
         for i, txt in enumerate(client_ids):
-            plt.annotate(txt, (x_coords[i], y_coords[i]), textcoords="offset points", xytext=(0, 5), ha='center')
+            annotation = f"{txt} ({client_capas[i]})"
+            plt.annotate(annotation, (x_coords[i], y_coords[i]), textcoords="offset points", xytext=(0, 5), ha='center')
+
 
         # Rysowanie ścieżek
-        for color_idx, (key, routes) in enumerate(best_solution.items()):
-            for route in routes:
-                route_x = [self.depot_node[1] if node == 1 else self.clients[node - 2].x for node in route]
-                route_y = [self.depot_node[2] if node == 1 else self.clients[node - 2].y for node in route]
-                plt.plot(route_x, route_y, color=colors[color_idx % len(colors)], linewidth=2)
+        if best_solution != None:
+            for color_idx, (key, routes) in enumerate(best_solution.items()):
+                for route in routes:
+                    route_x = [self.depot_node[1] if node == 1 else self.clients[node - 2].x for node in route]
+                    route_y = [self.depot_node[2] if node == 1 else self.clients[node - 2].y for node in route]
+                    plt.plot(route_x, route_y, color=colors[color_idx % len(colors)], linewidth=2)
 
         plt.title('Geographical Distribution of Nodes for CVRP')
         plt.xlabel('X Coordinate')
         plt.ylabel('Y Coordinate')
         plt.grid(True)
-        plt.xlim(self.map_range[0], self.map_range[1])
-        plt.ylim(self.map_range[2], self.map_range[3])
+        # plt.xlim(self.map_range[0], self.map_range[1])
+        # plt.ylim(self.map_range[2], self.map_range[3])
         plt.show()
-
-    def move_drones(self):
-
-        for drone in self.drones:
-            self.choose_nearest_node(drone)
-            drone.move_to_next_node()
-            visited_client = self.find_visited_client(drone)
-            if visited_client is not None:
-                self.clients.remove(visited_client)
-
-
-    def choose_nearest_node(self, drone):
-            nearest_distance = float('inf')
-            nearest_x = None
-            nearest_y = None
-            for node in self.clients:
-                distance = math.sqrt((drone.x - node.x)**2 + (drone.y - node.y)**2)
-                if distance < nearest_distance and not drone.is_full(node.capacity):
-                    nearest_distance = distance
-                    nearest_x = node.x
-                    nearest_y = node.y
-                    nearest_node_weight= node.capacity
-                elif drone.is_full(node.capacity):
-                    drone.x_client = self.depot_node[1]
-                    drone.y_client = self.depot_node[2]
-
-            if nearest_x is not None and nearest_y is not None:
-                drone.x_client = nearest_x
-                drone.y_client = nearest_y
-                drone.client_weight = nearest_node_weight
-            else:
-                drone.x_client = self.depot_node[1]
-                drone.y_client = self.depot_node[2]
-
-    def find_visited_client(self, drone):
-        for client in self.clients:
-            if client.x == drone.x and client.y == drone.y:
-                return client
-        return None
 
 
 
